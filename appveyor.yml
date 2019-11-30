@@ -1,53 +1,20 @@
-# GENERAL CONFIGURATION #
-#version format
-version: '1.0.{build}'
-
-#branches to build
-branches:
-  only:
-    - master
-
-#don't build on tags
-skip_tags: true
-
-# ENVIRONMENT CONFIGURATION #
-
-clone_folder: c:\%PROJECT_NAME%
-
-shallow_clone: true
-
-clone_depth: 5   
-
-environment:
-  PROJECT_NAME: HelloElfLoader
-  matrix:
-  - id: msvc-x64
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    platform: x64
-    compiler: msvc-15
-    generator: "Visual Studio 15 2017 Win64"
-  
-
+# AppVeyor build configuration
+# https://www.appveyor.com/docs/build-configuration
+# https://www.appveyor.com/docs/appveyor-yml/
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+# version format
+version: 1.0.{build}-{branch}
+image: Visual Studio 2017
+# add platforms to build matrix:
+platform:
+- x64
+# add configurations to build matrix:
 configuration:
-  - Release
-  
-#the build fail once the job fails
-matrix:
-  fast_finish: true
-
+- Release
+# use custom build_script
 build_script:
-  - MSBuild /nologo /t:ProjectName:HelloElfLoader HelloElfLoader.sln
+- ECHO BUILD %CONFIGURATION% %PLATFORM%
+- msbuild /m HelloElfLoader.sln /p:Configuration=%CONFIGURATION% /p:Platform=%PLATFORM%
 
-after_build:
-  - cd C:\%PROJECT_NAME%\build\%configuration%\
- 
-  - 7z a %PROJECT_NAME%-win-%platform%.7z ./*
-
-# TEST CONFIGURATION #
-test: off
-
-# ARTIFACTS AND DEPLOYMENT CONFIGURATION #
-artifacts:
-  - path: '%PROJECT_NAME%-win-%platform%.7z'
-    name: artifacts
-    
