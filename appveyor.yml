@@ -36,7 +36,7 @@ matrix:
   fast_finish: true
 
 build_script:
-  - MSBuild /nologo /t:ProjectName:Build HelloElfLoader.sln
+  - MSBuild /nologo /t:ProjectName:HelloElfLoader HelloElfLoader.sln
 
 after_build:
   - cd C:\%PROJECT_NAME%\build\%configuration%\
