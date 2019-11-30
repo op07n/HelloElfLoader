@@ -1,0 +1,53 @@
+# GENERAL CONFIGURATION #
+#version format
+version: '1.0.{build}'
+
+#branches to build
+branches:
+  only:
+    - master
+
+#don't build on tags
+skip_tags: true
+
+# ENVIRONMENT CONFIGURATION #
+
+clone_folder: c:\%PROJECT_NAME%
+
+shallow_clone: true
+
+clone_depth: 5   
+
+environment:
+  PROJECT_NAME: HelloElfLoader
+  matrix:
+  - id: msvc-x64
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    platform: x64
+    compiler: msvc-15
+    generator: "Visual Studio 15 2017 Win64"
+  
+
+configuration:
+  - Release
+  
+#the build fail once the job fails
+matrix:
+  fast_finish: true
+
+build_script:
+  - MSBuild /nologo /t:ProjectName:Build HelloElfLoader.sln
+
+after_build:
+  - cd C:\%PROJECT_NAME%\build\%configuration%\
+ 
+  - 7z a %PROJECT_NAME%-win-%platform%.7z ./*
+
+# TEST CONFIGURATION #
+test: off
+
+# ARTIFACTS AND DEPLOYMENT CONFIGURATION #
+artifacts:
+  - path: '%PROJECT_NAME%-win-%platform%.7z'
+    name: artifacts
+    
